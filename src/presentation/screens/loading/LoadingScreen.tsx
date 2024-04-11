@@ -1,9 +1,10 @@
-import {Text, View} from 'react-native';
+import {Button, Layout, Text} from '@ui-kitten/components';
 
 export const LoadingScreen = () => {
   return (
-    <View>
+    <Layout style={{flex: 1}}>
       <Text>LoadingScreen</Text>
-    </View>
+      <Button>Cerrar sesion</Button>
+    </Layout>
   );
 };
