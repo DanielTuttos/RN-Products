@@ -3,13 +3,11 @@ import {ScrollView, useWindowDimensions} from 'react-native';
 import {MyIcon} from '../../components';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/StackNavigator';
-import {API_URL} from '@env';
 
 interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'> {}
 
 export const LoginScreen = ({navigation}: Props) => {
   const {height} = useWindowDimensions();
-  console.log('env: ', API_URL);
   return (
     <Layout style={{flex: 1}}>
       <ScrollView style={{marginHorizontal: 40}}>
