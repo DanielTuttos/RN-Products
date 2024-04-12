@@ -16,7 +16,6 @@ export const MyIcon = ({name, color, white = false}: Props) => {
   } else {
     color = theme[color] ?? theme['text-basic-color'];
   }
-  console.log(theme);
   return <Icon name={name} style={styles.icon} fill={color} />;
 };
 
