@@ -1,13 +1,36 @@
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
-import {ScrollView, useWindowDimensions} from 'react-native';
+import {Alert, ScrollView, useWindowDimensions} from 'react-native';
 import {MyIcon} from '../../components';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/StackNavigator';
+import {useAuthStore} from '../../store/auth/useAuthStore';
+import {useState} from 'react';
 
 interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'> {}
 
 export const LoginScreen = ({navigation}: Props) => {
+  const {login} = useAuthStore();
+
+  const [isPosting, setIsPosting] = useState(false);
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
   const {height} = useWindowDimensions();
+
+  const onLogin = async () => {
+    if (!form.email.length || !form.password.length) {
+      return;
+    }
+    setIsPosting(true);
+    const wasSuccessfull = await login(form.email, form.password);
+    setIsPosting(false);
+    if (wasSuccessfull) return;
+    Alert.alert('Error', 'Usuario o contrasena incorrectos');
+  };
+
   return (
     <Layout style={{flex: 1}}>
       <ScrollView style={{marginHorizontal: 40}}>
@@ -22,6 +45,8 @@ export const LoginScreen = ({navigation}: Props) => {
             style={{marginBottom: 10}}
             keyboardType="email-address"
             autoCapitalize="none"
+            value={form.email}
+            onChangeText={email => setForm({...form, email})}
             accessoryLeft={<MyIcon name="email-outline" />}
           />
 
@@ -30,6 +55,8 @@ export const LoginScreen = ({navigation}: Props) => {
             style={{marginBottom: 10}}
             secureTextEntry
             autoCapitalize="none"
+            value={form.password}
+            onChangeText={password => setForm({...form, password})}
             accessoryLeft={<MyIcon name="lock-outline" />}
           />
         </Layout>
@@ -40,10 +67,9 @@ export const LoginScreen = ({navigation}: Props) => {
         {/* Button */}
         <Layout>
           <Button
-            onPress={() => {}}
-            accessoryRight={<MyIcon name="arrow-forward-outline" white />}
-            // appearance="ghost"
-          >
+            disabled={isPosting}
+            onPress={onLogin}
+            accessoryRight={<MyIcon name="arrow-forward-outline" white />}>
             Ingresar
           </Button>
         </Layout>

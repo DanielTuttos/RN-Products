@@ -1,10 +1,9 @@
-import {Button, Layout, Text} from '@ui-kitten/components';
+import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
 
 export const LoadingScreen = () => {
   return (
-    <Layout style={{flex: 1}}>
-      <Text>LoadingScreen</Text>
-      <Button>Cerrar sesion</Button>
+    <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Spinner status="primary" size="large" />
     </Layout>
   );
 };
