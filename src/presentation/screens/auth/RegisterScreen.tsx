@@ -75,9 +75,6 @@ export const RegisterScreen = ({navigation}: Props) => {
           />
         </Layout>
 
-        {/* space */}
-        {/* <Layout style={{height: 20}} /> */}
-
         {showErros && (
           <Layout style={{gap: 10, marginTop: 20}}>
             {errors.map((error, index) => (
