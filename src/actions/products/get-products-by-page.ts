@@ -1,7 +1,7 @@
 import {tesloApi} from '../../config/api/tesloApi';
 import {Product} from '../../domain/entities/product';
 import {TesloProduct} from '../../infrastructure/interfaces/teslo-products.response';
-import {ProductMapper} from '../../infrastructure/mappes/product.mapper';
+import {ProductMapper} from '../../infrastructure/mapper/product.mapper';
 
 export const getProductsByPage = async (
   page: number,

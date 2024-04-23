@@ -9,7 +9,7 @@ export class ProductMapper {
       description: tesloProduct.description,
       gender: tesloProduct.gender,
       images: tesloProduct.images.map(
-        image => `${API_URL}/files/product/${image}`,
+        image => `${API_URL}files/product/${image}`,
       ),
       price: tesloProduct.price,
       sizes: tesloProduct.sizes,
