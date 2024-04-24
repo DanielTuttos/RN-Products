@@ -7,7 +7,6 @@ export const getProductsByPage = async (
   page: number,
   limit: number = 20,
 ): Promise<Product[]> => {
-  console.log({page, limit});
   try {
     const {data} = await tesloApi.get<TesloProduct[]>(
       `/products?offset=${page * 10}&limit=${limit}`,

@@ -31,6 +31,7 @@ export const ProductList = ({products, fetchNextPage}: Props) => {
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onPullToRefresh} />
       }
+      showsHorizontalScrollIndicator={false}
     />
   );
 };
