@@ -9,14 +9,15 @@ import {
 import {MainLayout} from '../../layouts/MainLayout';
 import {getProductById} from '../../../actions/products/get-product-by-id';
 import {RootStackParams} from '../../navigation/StackNavigator';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {StackScreenProps} from '@react-navigation/stack';
 import {useRef} from 'react';
 import {ScrollView} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {FadeInImage, MyIcon} from '../../components';
-import {Gender, Size} from '../../../domain/entities/product';
+import {Gender, Product, Size} from '../../../domain/entities/product';
 import {Formik} from 'formik';
+import {updateCreateProduct} from '../../../actions/products/update-create-product';
 
 // tallas
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
@@ -29,6 +30,7 @@ export const ProductScreen = ({route}: Props) => {
   const productIdRef = useRef(route.params.productId);
 
   const theme = useTheme();
+  const queryClient = useQueryClient();
 
   // use query
   const {isLoading, data: product} = useQuery({
@@ -36,14 +38,25 @@ export const ProductScreen = ({route}: Props) => {
     staleTime: 1000 * 60 * 60, // 1 hora
     queryFn: () => getProductById(productIdRef.current),
   });
+
   // use mutation
+  const mutation = useMutation({
+    mutationFn: (data: Product) =>
+      updateCreateProduct({...data, id: productIdRef.current}),
+    onSuccess(data: Product) {
+      productIdRef.current = data.id;
+      queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
+      queryClient.invalidateQueries({queryKey: ['product', data.id]});
+      // queryClient.setQueryData(['product', data.id], data);
+    },
+  });
 
   if (!product) {
     return <MainLayout title="Cargando..." />;
   }
 
   return (
-    <Formik initialValues={product} onSubmit={values => console.log(values)}>
+    <Formik initialValues={product} onSubmit={mutation.mutate}>
       {({handleChange, handleSubmit, values, errors, setFieldValue}) => (
         <MainLayout title={values.title} subtitle={`Precio: ${values.price}`}>
           <ScrollView style={{flex: 1}}>
@@ -99,12 +112,14 @@ export const ProductScreen = ({route}: Props) => {
                 value={values.price.toString()}
                 style={{flex: 1}}
                 onChangeText={handleChange('price')}
+                keyboardType="number-pad"
               />
               <Input
                 label="Inventario"
                 value={values.stock.toString()}
                 style={{flex: 1}}
                 onChangeText={handleChange('stock')}
+                keyboardType="number-pad"
               />
             </Layout>
 
@@ -164,8 +179,9 @@ export const ProductScreen = ({route}: Props) => {
 
             {/* boton de guardar */}
             <Button
-              onPress={() => {}}
+              onPress={() => handleSubmit()}
               style={{margin: 15}}
+              disabled={mutation.isPending}
               accessoryLeft={<MyIcon name="save-outline" white />}>
               Guardar
             </Button>
