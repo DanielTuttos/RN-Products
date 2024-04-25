@@ -1,35 +1,28 @@
+import {useRef} from 'react';
 import {
   Button,
   ButtonGroup,
   Input,
   Layout,
-  Text,
   useTheme,
 } from '@ui-kitten/components';
 import {MainLayout} from '../../layouts/MainLayout';
-import {getProductById} from '../../../actions/products/get-product-by-id';
 import {RootStackParams} from '../../navigation/StackNavigator';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {StackScreenProps} from '@react-navigation/stack';
-import {useRef} from 'react';
 import {ScrollView} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {FadeInImage, MyIcon} from '../../components';
-import {Gender, Product, Size} from '../../../domain/entities/product';
+import {MyIcon, ProductImages, SelectorsButtons} from '../../components';
+import {Product} from '../../../domain/entities/product';
 import {Formik} from 'formik';
-import {updateCreateProduct} from '../../../actions/products/update-create-product';
-
-// tallas
-const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
-
-const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Unisex, Gender.Women];
+import {getProductById, updateCreateProduct} from '../../../actions/products';
+import {genders, sizes} from '../../../config/constants/product.constant';
 
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {}
 
 export const ProductScreen = ({route}: Props) => {
   const productIdRef = useRef(route.params.productId);
 
-  const theme = useTheme();
+  // const theme = useTheme();
   const queryClient = useQueryClient();
 
   // use query
@@ -61,20 +54,13 @@ export const ProductScreen = ({route}: Props) => {
         <MainLayout title={values.title} subtitle={`Precio: ${values.price}`}>
           <ScrollView style={{flex: 1}}>
             {/* imagenes del producto */}
-            <Layout>
-              {/* todo: tener en consideracion cuando no hay imagenes */}
-              <FlatList
-                data={values.images}
-                horizontal
-                keyExtractor={item => item}
-                showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <FadeInImage
-                    uri={item}
-                    style={{width: 300, height: 300, marginHorizontal: 7}}
-                  />
-                )}
-              />
+            <Layout
+              style={{
+                marginVertical: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <ProductImages images={values.images} />
             </Layout>
             {/* formulario */}
             <Layout style={{marginHorizontal: 10}}>
@@ -124,58 +110,25 @@ export const ProductScreen = ({route}: Props) => {
             </Layout>
 
             {/* selectores */}
-            <ButtonGroup
-              size="small"
-              appearance="outline"
-              style={{
-                margin: 2,
-                marginTop: 20,
-                marginHorizontal: 15,
-              }}>
-              {sizes.map(size => (
-                <Button
-                  onPress={() =>
-                    setFieldValue(
-                      'sizes',
-                      values.sizes.includes(size)
-                        ? values.sizes.filter(s => s !== size)
-                        : [...values.sizes, size],
-                    )
-                  }
-                  key={size}
-                  style={{
-                    flex: 1,
-                    backgroundColor: values.sizes.includes(size)
-                      ? theme['color-primary-200']
-                      : undefined,
-                  }}>
-                  {size}
-                </Button>
-              ))}
-            </ButtonGroup>
+            <SelectorsButtons
+              values={sizes}
+              currentValues={values.sizes}
+              onPress={size =>
+                setFieldValue(
+                  'sizes',
+                  values.sizes.includes(size)
+                    ? values.sizes.filter(s => s !== size)
+                    : [...values.sizes, size],
+                )
+              }
+            />
 
-            <ButtonGroup
-              size="small"
-              appearance="outline"
-              style={{
-                margin: 2,
-                marginTop: 20,
-                marginHorizontal: 15,
-              }}>
-              {genders.map(gender => (
-                <Button
-                  key={gender}
-                  style={{
-                    flex: 1,
-                    backgroundColor: values.gender.startsWith(gender)
-                      ? theme['color-primary-200']
-                      : undefined,
-                  }}
-                  onPress={() => setFieldValue('gender', gender)}>
-                  {gender}
-                </Button>
-              ))}
-            </ButtonGroup>
+            <SelectorsButtons
+              values={genders}
+              onPress={gender => setFieldValue('gender', gender)}
+              currentValues={values.gender}
+              isSelectOne
+            />
 
             {/* boton de guardar */}
             <Button
@@ -185,9 +138,6 @@ export const ProductScreen = ({route}: Props) => {
               accessoryLeft={<MyIcon name="save-outline" white />}>
               Guardar
             </Button>
-
-            <Text>{JSON.stringify(values, null, 2)}</Text>
-
             <Layout style={{height: 200}} />
           </ScrollView>
         </MainLayout>
